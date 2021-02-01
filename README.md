@@ -8,18 +8,15 @@ Tested on Pop OS 20.10, Nautilus file browser.
 ![Before and after](demo.png)
 
 # Installation
-Clone the repository: `git clone git@github.com:the-lay/mrc-gnome-thumbnailer.git`
-
-Change directory: `cd mrc-gnome-thumbnailer`
-
-Run make install: `sudo make install`
-
-Delete thumbnails folder: `rm -r ~/.cache/thumbnails`
-
-Quit all Nautilus processes: `nautilus -q`
-
-__Even if you currently do not have any Nautilus windows open, you should run the command above!__
-
+1. Quit all Nautilus processes: `nautilus -q`
+   - __Even if you currently do not have any Nautilus windows open, you should run the command above!__
+2. Delete thumbnails folder: `rm -r ~/.cache/thumbnails`
+3. Clone the repository: `git clone git@github.com:the-lay/mrc-gnome-thumbnailer.git`
+4. Change directory: `cd mrc-gnome-thumbnailer`
+5. Run make install: `sudo make install`
+   - The script uses PIP to install necessary python packages. If you do not have system-wide pip installation,
+    please setup it first with `sudo apt install python3-pip`.
+     
 From now on, the thumbnails should be visible.
 
 # Troubleshooting
@@ -32,3 +29,5 @@ and many more threads online). The short workaround fix would be to install a bw
 sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
 sudo chmod +rx /usr/local/bin/bwrap
 ```
+I strongly do *not* recommend this workaround.
+Instead, consider updating to the latest version of Ubuntu, where this issue is already fixed.
