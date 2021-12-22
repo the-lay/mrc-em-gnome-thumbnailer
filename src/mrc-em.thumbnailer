@@ -1,0 +1,4 @@
+[Thumbnailer Entry]
+TryExec=mrc-em-thumbnailer
+Exec=mrc-em-thumbnailer %i %o %s
+MimeType=image/mrc;image/em

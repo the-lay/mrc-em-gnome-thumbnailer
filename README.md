@@ -1,9 +1,10 @@
-# mrc-gnome-thumbnailer
-MRC2014 (*.mrc) 2D and 3D file thumbnail generator for GNOME desktops.
+# mrc-em-gnome-thumbnailer
 
-The thumbnail shows central slice (if 3D) and automatically applies contrast stretching.
+GNOME desktop thumbnailer for MRC2014 (*.mrc) and EM (*.em), common cryo-electron tomography file formats. The thumbnail shows central slice and automatically applies contrast stretching.
 
-Tested on Pop OS 20.10, Nautilus file browser.
+Update 22.12.2021: Added support for .em files, renamed the project.
+
+Tested on Ubuntu/PopOS 20.04, 20.10, 21.04, 21.10.
 
 ![Before and after](demo.png)
 

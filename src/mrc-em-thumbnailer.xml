@@ -5,4 +5,9 @@
         <generic-icon name="image-x-generic"/>
         <glob pattern="*.mrc"/>
     </mime-type>
+    <mime-type type="image/em">
+        <comment>EM</comment>
+        <generic-icon name="image-x-generic"/>
+        <glob pattern="*.em"/>
+    </mime-type>
 </mime-info>

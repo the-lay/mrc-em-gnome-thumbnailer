@@ -1,4 +1,0 @@
-[Thumbnailer Entry]
-TryExec=mrc-thumbnailer
-Exec=mrc-thumbnailer %i %o %s
-MimeType=image/mrc
