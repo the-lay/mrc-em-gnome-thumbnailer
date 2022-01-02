@@ -12,8 +12,8 @@ Tested on Ubuntu/PopOS 20.04, 20.10, 21.04, 21.10.
 1. Quit all Nautilus processes: `nautilus -q`
    - __Even if you currently do not have any Nautilus windows open, you should run the command above!__
 2. Delete thumbnails folder: `rm -r ~/.cache/thumbnails`
-3. Clone the repository: `git clone git@github.com:the-lay/mrc-gnome-thumbnailer.git`
-4. Change directory: `cd mrc-gnome-thumbnailer`
+3. Clone the repository: `git clone git@github.com:the-lay/mrc-em-gnome-thumbnailer.git tomo-thumbnailer`
+4. Change directory: `cd tomo-thumbnailer`
 5. Run make install: `sudo make install`
    - The script uses PIP to install necessary python packages. If you do not have system-wide pip installation,
     please setup it first with `sudo apt install python3-pip`.
