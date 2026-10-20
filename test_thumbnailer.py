@@ -74,9 +74,10 @@ def test_cli_writes_png_for_every_extension():
     data = random_data((5, 64, 48), np.float32)
     for name in ('a.mrc', 'b.MRC', 'c.mrcs', 'd.map', 'e.rec'):
         mrcfile.write(tmp / name, data, overwrite=True)
+    mrcfile.write(tmp / 'h_2d.mrc', data[0], overwrite=True)
     for name in ('f.em', 'g.EM'):
         emfile.write(tmp / name, data, overwrite=True)
-    for name in ('a.mrc', 'b.MRC', 'c.mrcs', 'd.map', 'e.rec', 'f.em', 'g.EM'):
+    for name in ('a.mrc', 'b.MRC', 'c.mrcs', 'd.map', 'e.rec', 'h_2d.mrc', 'f.em', 'g.EM'):
         out = tmp / f'{name}.png'
         result = thumbnail(tmp / name, out)
         assert result.returncode == 0, (name, result.stderr)
