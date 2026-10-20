@@ -17,7 +17,7 @@ from gi.repository import Gio, GnomeDesktop  # noqa: E402
 def write_mrc(path, data):
     header = bytearray(1024)
     struct.pack_into('<4i', header, 0, data.shape[2], data.shape[1], data.shape[0], 2)  # nx, ny, nz, mode
-    header[208:214] = b'MAP DD'  # MRC2014 stamp, little-endian machine stamp
+    header[208:214] = b'MAP DD'  # MRC2014 stamp, little-endian machine stamp; ISPG stays 0 (image stack)
     path.write_bytes(header + data.astype('<f4').tobytes())
 
 
@@ -32,12 +32,14 @@ tmp = Path(tempfile.mkdtemp())
 data = np.random.default_rng(0).normal(size=(3, 48, 64))
 for name in ('a.mrc', 'b.MRC', 'c.mrcs', 'd.map', 'e.rec'):
     write_mrc(tmp / name, data)
+write_mrc(tmp / 'h_2d.mrc', data[:1])  # single image (nz=1), like a micrograph
 for name in ('f.em', 'g.EM'):
     write_em(tmp / name, data)
 (tmp / 'linker.map').write_text('0x0000 main\n' * 50)
 
 expected = {'a.mrc': 'image/mrc', 'b.MRC': 'image/mrc', 'c.mrcs': 'image/mrc', 'd.map': 'image/mrc',
-            'e.rec': 'image/mrc', 'f.em': 'image/em', 'g.EM': 'image/em', 'linker.map': 'text/plain'}
+            'e.rec': 'image/mrc', 'h_2d.mrc': 'image/mrc', 'f.em': 'image/em', 'g.EM': 'image/em',
+            'linker.map': 'text/plain'}
 
 factory = GnomeDesktop.DesktopThumbnailFactory.new(GnomeDesktop.DesktopThumbnailSize.LARGE)
 # GNOME 43+ added a cancellable argument
