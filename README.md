@@ -1,5 +1,7 @@
 # mrc-em-gnome-thumbnailer
 
+[![test](https://github.com/the-lay/mrc-em-gnome-thumbnailer/actions/workflows/test.yml/badge.svg)](https://github.com/the-lay/mrc-em-gnome-thumbnailer/actions/workflows/test.yml)
+
 GNOME desktop thumbnailer for MRC2014 (*.mrc, *.mrcs, *.map, ...) and EM (*.em), common cryo-electron microscopy and tomography file formats. The thumbnail shows the central slice and automatically applies contrast stretching.
 
 Update 20.10.2026: Works again on current distributions: no more pip, only numpy and Pillow from your distribution's packages. Added .mrcs and .map support.
@@ -42,4 +44,8 @@ nautilus -q
 Run the thumbnailer by hand to see the error message: `mrc-em-thumbnailer path/to/file.mrc /tmp/thumbnail.png 256`
 
 # Development
-Run the tests with [uv](https://docs.astral.sh/uv/): `uv run test_thumbnailer.py`
+- Unit tests, with [uv](https://docs.astral.sh/uv/): `uv run test_thumbnailer.py`
+- Integration test through GNOME's own thumbnail factory, after `sudo make install`: `python3 test_gnome.py`
+  (needs `python3-gi gir1.2-gnomedesktop-4.0` on Ubuntu/Debian)
+
+GitHub Actions runs both on every push, and monthly on Ubuntu 22.04, 24.04 and 26.04 to catch distribution updates that break the thumbnailer.
