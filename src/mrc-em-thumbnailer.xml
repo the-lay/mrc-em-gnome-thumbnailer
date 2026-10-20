@@ -4,6 +4,11 @@
         <comment>MRC2014</comment>
         <generic-icon name="image-x-generic"/>
         <glob pattern="*.mrc"/>
+        <glob pattern="*.mrcs"/>
+        <!-- .map, .rec, .st, ... are only MRC if the file says so -->
+        <magic>
+            <match type="string" offset="208" value="MAP "/>
+        </magic>
     </mime-type>
     <mime-type type="image/em">
         <comment>EM</comment>

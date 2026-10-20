@@ -3,12 +3,16 @@
 
 import numpy as np
 import sys
-import mrcfile
-import emfile
+import struct
 import argparse
 from PIL import Image
 import warnings
 warnings.simplefilter('ignore')
+
+# Supported data types, by MRC2014 mode and EM data type
+# https://www.ccpem.ac.uk/mrc_format/mrc2014.php
+MRC_DTYPES = {0: 'i1', 1: 'i2', 2: 'f4', 6: 'u2', 12: 'f2'}
+EM_DTYPES = {1: 'i1', 2: 'i2', 4: 'i4', 5: 'f4', 9: 'f8'}
 
 
 # Intensity rescaling helpers
@@ -16,41 +20,41 @@ warnings.simplefilter('ignore')
 def rescale(image, in_range) -> np.ndarray:
     imin, imax = in_range
     image = np.clip(image, imin, imax)
-    image = (image - imin) / (imax - imin)
-    return np.asarray(image * 255., dtype=np.uint8)
+    image = (image - imin) / ((imax - imin) or 1)
+    return np.asarray(np.nan_to_num(image) * 255., dtype=np.uint8)
 
 
-# Read mrc file and return central slice
+# Read only the central slice of a (nz, ny, nx) array stored after a header
+def central_slice(filename, offset, dtype, nx, ny, nz):
+    offset += (nz // 2) * nx * ny * dtype.itemsize
+    return np.fromfile(filename, dtype=dtype, count=nx * ny, offset=offset).reshape(ny, nx)
+
+
+# Read mrc file header and return central slice
 def mrc_central_slice(filename):
 
-    # MrcMemmap reads dtype and shape from header
-    # https://github.com/ccpem/mrcfile/blob/master/mrcfile/mrcmemmap.py#L92
-    f = mrcfile.mmap(filename, permissive=True)
+    with open(filename, 'rb') as f:
+        header = f.read(1024)
 
-    # mrcfile can be 2D, should check for that
-    ndim = len(f.data.shape)
-    if ndim == 2:
-        data = f.data
-    elif ndim == 3:
-        central_slice = f.data.shape[0] // 2
-        data = f.data[central_slice]
-    else:
-        f.close()
-        sys.exit(-1)
+    # machine stamp is 0x11 for big-endian, 0x44 for little-endian
+    order = '>' if header[212] == 0x11 else '<'
+    nx, ny, nz, mode = struct.unpack(order + '4i', header[:16])
+    extended_header_size, = struct.unpack(order + 'i', header[92:96])
+    dtype = np.dtype(order + MRC_DTYPES[mode])
 
-    f.close()
-
-    return data
+    return central_slice(filename, 1024 + extended_header_size, dtype, nx, ny, nz)
 
 
 # Read em file header and return central slice
 def em_central_slice(filename):
 
-    _, f = emfile.read(filename, mmap=True)
-    central_slice = f.shape[0] // 2
-    data = f[central_slice]
+    with open(filename, 'rb') as f:
+        header = f.read(512)
 
-    return data
+    nx, ny, nz = struct.unpack('<3i', header[4:16])
+    dtype = np.dtype('<' + EM_DTYPES[header[3]])
+
+    return central_slice(filename, 512, dtype, nx, ny, nz)
 
 
 if __name__ == '__main__':
@@ -62,16 +66,14 @@ if __name__ == '__main__':
     parser.add_argument('size',     type=int,   help='Thumbnail image size')
     arguments = parser.parse_args()
 
-    # load data
-    if arguments.input.endswith('.mrc'):
-        data = mrc_central_slice(arguments.input)
-    elif arguments.input.endswith('.em'):
+    # load data; everything that is not .em is MRC (.mrc, .mrcs, .map, .rec, ...)
+    if arguments.input.lower().endswith('.em'):
         data = em_central_slice(arguments.input)
     else:
-        sys.exit(-1)
+        data = mrc_central_slice(arguments.input)
 
     # contrast stretching to 2-98 percentile
-    p2, p98 = np.percentile(data, (2, 98))
+    p2, p98 = np.nanpercentile(data, (2, 98))
     data = rescale(data, in_range=(p2, p98))
 
     # convert to PIL
@@ -81,6 +83,6 @@ if __name__ == '__main__':
     img.thumbnail((arguments.size, arguments.size))
 
     # save image
-    img.save(arguments.output)
+    img.save(arguments.output, 'PNG')
 
     sys.exit(0)
